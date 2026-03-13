@@ -63,20 +63,26 @@
         }
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 16px 24px;
         }
         .stat-card {
             display: flex;
-            align-items: baseline;
+            align-items: center;
             justify-content: space-between;
             border-bottom: 1px dashed #cbdbe9;
             padding: 8px 0;
+            min-width: 0; /* Важно для работы text-overflow */
         }
         .stat-label {
             color: #1f4462;
             font-weight: 500;
             font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 0 1 auto;
+            margin-right: 8px;
         }
         .stat-value {
             font-family: 'JetBrains Mono', monospace;
@@ -86,12 +92,35 @@
             border-radius: 40px;
             font-size: 1rem;
             color: #003b6f;
+            min-width: 85px; /* Фиксированная минимальная ширина */
+            width: 85px;      /* Фиксированная ширина для всех значений */
+            max-width: 85px;  /* Запрещаем расширение */
+            text-align: right;
+            display: inline-block;
+            box-sizing: border-box;
+            flex-shrink: 0;
+            letter-spacing: 0.3px;
+            /* Для очень длинных чисел */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .stat-unit {
             font-size: 0.7rem;
             color: #5c7f9c;
             margin-left: 4px;
             font-weight: 400;
+            white-space: nowrap;
+        }
+        /* Контейнер для метки + единицы измерения - теперь всегда в одну строку */
+        .stat-label-wrapper {
+            display: flex;
+            align-items: baseline;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1 1 auto;
+            min-width: 0; /* Позволяет сжиматься */
         }
         .chart-wrapper {
             background: #ffffffd9;
@@ -134,6 +163,7 @@
             width: 14px;
             height: 14px;
             border-radius: 4px;
+            flex-shrink: 0;
         }
         .unit-badge {
             background: #dae6f2;
@@ -143,6 +173,7 @@
             font-weight: 700;
             color: #1d496e;
             margin-left: 6px;
+            white-space: nowrap;
         }
         .vertical-line {
             stroke: #2c3e50;
@@ -210,14 +241,15 @@
     const numPoints = 72;
     const timeHours = Array.from({ length: numPoints }, (_, i) => (i * 24) / (numPoints - 1));
 
-    // Генератор с большей вариативностью
+    // Генератор с большей вариативностью и ДЛИННЫМИ дробными значениями для теста
     function generateRichSeries(base, amp, cycles = 1.5, noise = 0.5, phase = 0) {
         return timeHours.map((h, idx) => {
             const trend = base 
                 + amp * Math.sin((h / 24) * 2 * Math.PI * cycles + phase)
                 + 0.4 * amp * Math.sin((h / 8) * 2 * Math.PI);  // высокочастотные колебания
             const randomWalk = (Math.sin(idx * 0.7) * 0.3 + Math.cos(idx * 0.3) * 0.2) * amp;
-            return Number((trend + randomWalk + (Math.random() - 0.5) * noise * 0.7).toFixed(2));
+            // Увеличиваем количество знаков после запятой до 4-5 для теста "длинных значений"
+            return Number((trend + randomWalk + (Math.random() - 0.5) * noise * 0.7).toFixed(4));
         });
     }
 
@@ -324,7 +356,7 @@
         .call(d3.axisBottom(xScale).ticks(12).tickFormat(d => d + "ч"))
         .style("font-size", "12px");
 
-    // --- Линии (полупроzрачные, чтобы точки выделялись) ---
+    // --- Линии (полупрозрачные, чтобы точки выделялись) ---
     Object.keys(metrics).forEach(key => {
         const m = metrics[key];
         let scale = m.axis === 'left' ? yLeft : (m.axis === 'right' ? yRight : yRight2);
@@ -400,12 +432,21 @@
         if (!pointData) return;
         const grid = d3.select("#statsGrid");
         grid.html(""); // очищаем
+        
         Object.keys(metrics).forEach(key => {
             const m = metrics[key];
             const value = pointData[key];
-            const formatted = typeof value === 'number' ? value.toFixed(2) : value;
+            // Форматируем с фиксированным количеством знаков для единообразия (но в целом любое число)
+            const formatted = typeof value === 'number' ? value.toFixed(4) : value;
+            
             const card = grid.append("div").attr("class", "stat-card");
-            card.append("span").attr("class", "stat-label").html(`${m.name}  <span class="stat-unit">${m.unit}</span>`);
+            
+            // Создаем обертку для label + unit (всегда в одну строку)
+            const labelWrapper = card.append("div").attr("class", "stat-label-wrapper");
+            labelWrapper.append("span").attr("class", "stat-label").text(m.name);
+            labelWrapper.append("span").attr("class", "stat-unit").text(m.unit);
+            
+            // Значение с фиксированной шириной
             card.append("span").attr("class", "stat-value").text(formatted);
         });
     }
