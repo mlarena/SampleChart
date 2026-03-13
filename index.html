@@ -9,33 +9,41 @@
     <!-- Подключение D3.js -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
-<body>
-<div class="dashboard">
-    <h2>
-        ⚡ Мониторинг дорожной станции
-        <span>12 параметров · 72 точки</span>
-    </h2>
+<body class="light-theme">
+    <div class="theme-toggle">
+        <button id="themeSwitcher" class="theme-btn" aria-label="Переключить тему">
+            <span class="theme-icon">🌙</span>
+            <span class="theme-text">Темная тема</span>
+        </button>
+    </div>
+    
+    <div class="dashboard">
+        <h2>
+            ⚡ Мониторинг дорожной станции
+            <span>12 параметров · 72 точки</span>
+        </h2>
 
-    <!-- DIV над графиком для отображения всех значений в текущей точке -->
-    <div class="stats-panel" id="statsPanel">
-        <div class="stats-title">📋 Текущие значения (наведите на точку)</div>
-        <div class="stats-grid" id="statsGrid">
-            <!-- будут заполнены через js -->
+        <!-- DIV над графиком для отображения всех значений в текущей точке -->
+        <div class="stats-panel" id="statsPanel">
+            <div class="stats-title">📋 Текущие значения (наведите на точку)</div>
+            <div class="stats-grid" id="statsGrid">
+                <!-- будут заполнены через js -->
+            </div>
+        </div>
+
+        <div class="chart-wrapper">
+            <svg id="chart" width="1200" height="600" viewBox="0 0 1200 600"></svg>
+        </div>
+
+        <div id="legendContainer" class="legend-container"></div>
+        <div class="footnote">
+            ⏱️ 72 временных метки (каждые 20 минут) · Три независимые оси Y · Точки с интерактивом
         </div>
     </div>
 
-    <div class="chart-wrapper">
-        <svg id="chart" width="1200" height="600" viewBox="0 0 1200 600"></svg>
-    </div>
-
-    <div id="legendContainer" class="legend-container"></div>
-    <div class="footnote">
-        ⏱️ 72 временных метки (каждые 20 минут) · Три независимые оси Y · Точки с интерактивом
-    </div>
-</div>
-
-<!-- Подключение JavaScript модулей -->
-<script src="data.js"></script>
-<script src="chart.js"></script>
+    <!-- Подключение JavaScript модулей -->
+    <script src="data.js"></script>
+    <script src="theme.js"></script>
+    <script src="chart.js"></script>
 </body>
 </html>

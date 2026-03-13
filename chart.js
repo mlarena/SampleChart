@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .attr("class", "grid")
         .attr("transform", `translate(0,0)`)
         .call(d3.axisLeft(yLeft).ticks(6).tickSize(-width).tickFormat(""))
-        .style("stroke", "#cbdae8")
+        .style("stroke", null) // Цвет будет управляться CSS
         .style("stroke-dasharray", "4 4")
         .style("opacity", 0.5);
 
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .attr("transform", "rotate(-90)")
         .attr("y", -55)
         .attr("x", -height/2)
-        .style("fill", "#1f4b74")
+        .style("fill", null)
         .style("font-weight", "600")
         .text("Левая ось (В / °C)");
 
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .attr("transform", "rotate(-90)")
         .attr("y", 50)
         .attr("x", -height/2)
-        .style("fill", "#9467bd")
+        .style("fill", null)
         .style("font-weight", "600")
         .text("Правая ось 1 (мм / %)");
 
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .attr("transform", "rotate(-90)")
         .attr("y", 50)
         .attr("x", -height/2)
-        .style("fill", "#ff7f0e")
+        .style("fill", null)
         .style("font-weight", "600")
         .text("Правая ось 2 (мм / код / °)");
 
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .attr("y2", height)
         .attr("x1", -10)  // начально спрятана
         .attr("x2", -10)
-        .style("stroke", "#1d3557")
+        .style("stroke", null) // Цвет из CSS
         .style("stroke-width", 2)
         .style("stroke-dasharray", "5,4")
         .style("opacity", 0);
